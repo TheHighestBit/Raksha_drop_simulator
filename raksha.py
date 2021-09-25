@@ -1,5 +1,28 @@
 from random import randint, choice
 
+#prices as of 25.09.2021
+prices = {"spirit weed seeds": 7377, 
+"Carambola seeds": 5277, 
+"golden dragonfruit seeds": 29981, 
+"small blunt rune salvage": 14533, 
+"medium spiky orikalkum salvage": 75000, 
+"huge plated orikalkum salvage": 125000, 
+"black dragonhide": 2215, 
+"onyx dust": 14797, 
+"dinosaur bones": 6542, 
+"crystal keys": 12441, 
+"inert adrenaline crystals": 9458, 
+"sirenic scales": 723602, 
+"soul runes": 2290, 
+"dark/light animica stone spirits": 1069, 
+"Greater ricochet ability codex": 1800000000, 
+"Greater chain ability codex": 170049626, 
+"Divert ability codex": 18000000, 
+"Shadow spike": 190000000, 
+"Laceration boots": 1184180, 
+"Blast diffusion boots": 3010545, 
+"Fleeting boots": 41000000}
+
 def calculate_drop():
     drop = choice(main_droptable)
 
