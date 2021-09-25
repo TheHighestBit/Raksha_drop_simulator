@@ -67,7 +67,6 @@ class Raksha(QWidget):
         self.total = 0
         self.speed = 200 #ms between each drop
         self.stopped = False #Used for controlling the loop that is calculating drops
-        self.kills_per_turn = 1 #How many kills per button press, the default is 1
 
         v_box = QtWidgets.QVBoxLayout()
 
@@ -138,6 +137,7 @@ class Raksha(QWidget):
                 
                 self.stopped = True
                 self.button.setText("Calculate drops")
+            
             else:
                 self.label1.setText("You received {}".format(drop))
                 stats[drop[drop.index(' ') + 1:]] += int(drop[:drop.index(' ')])
