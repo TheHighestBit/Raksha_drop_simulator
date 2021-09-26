@@ -1,12 +1,10 @@
 from math import ceil
 import sys
-from random import choice, randint
 from PyQt5 import QtWidgets
 from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import QApplication, QLabel, QPushButton, QMainWindow, QWidget, QMessageBox, QProgressBar
 from PyQt5.QtCore import QEventLoop, Qt, QTimer
 from raksha import calculate_drop, prices, update_prices
-from time import sleep
 
 #Used for keeping track of what items have been received
 stats = {"spirit weed seeds": 0, 
