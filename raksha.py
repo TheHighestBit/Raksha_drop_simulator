@@ -1,27 +1,47 @@
 from random import randint, choice
+import requests
+from item_to_id import item_to_id
 
-#prices as of 25.09.2021
-prices = {"spirit weed seeds": 7377, 
-"Carambola seeds": 5277, 
-"golden dragonfruit seeds": 29981, 
-"small blunt rune salvage": 14533, 
-"medium spiky orikalkum salvage": 75000, 
-"huge plated orikalkum salvage": 125000, 
-"black dragonhide": 2215, 
-"onyx dust": 14797, 
-"dinosaur bones": 6542, 
-"crystal keys": 12441, 
-"inert adrenaline crystals": 9458, 
-"sirenic scales": 723602, 
-"soul runes": 2290, 
-"dark/light animica stone spirits": 1069, 
-"Greater ricochet ability codex": 1800000000, 
-"Greater chain ability codex": 170049626, 
-"Divert ability codex": 18000000, 
-"Shadow spike": 190000000, 
-"Laceration boots": 1184180, 
-"Blast diffusion boots": 3010545, 
-"Fleeting boots": 41000000}
+#prices as of 26.09.2021
+prices = {'spirit weed seeds': 6657, 
+'Carambola seeds': 5369, 
+'golden dragonfruit seeds': 30600, 
+'small blunt rune salvage': 14700, 
+'medium spiky orikalkum salvage': 73300, 
+'huge plated orikalkum salvage': 123700, 
+'black dragonhide': 2182, 
+'onyx dust': 14400, 
+'dinosaur bones': 6188, 
+'crystal keys': 12600, 
+'inert adrenaline crystals': 9531, 
+'sirenic scales': 708500, 
+'soul runes': 2231, 
+'dark/light animica stone spirits': 950, 
+'Greater ricochet ability codex': 1500000000, 
+'Greater chain ability codex': 174800000, 
+'Divert ability codex': 18000000, 
+'Shadow spike': 188600000, 
+'Laceration boots': 1200000, 
+'Blast diffusion boots': 3000000, 
+'Fleeting boots': 44000000}
+
+def update_prices():
+    progress = 0
+    for k, v in item_to_id.items():
+        r = requests.get(f'https://services.runescape.com/m=itemdb_rs/api/catalogue/detail.json?item={v}')
+        price = str(r.json()['item']['current']['price']).rstrip()
+
+        if 'k' in price:
+            prices[k] = int(float(price[:-1]) * 10 ** 3)
+        elif 'm' in price:
+            prices[k] = int(float(price[:-1]) * 10 ** 6)
+        elif 'b' in price:
+            prices[k] = int(float(price[:-1]) * 10 ** 9)
+        else:
+            prices[k] = int(''.join(x for x in price if x.isdigit()))
+
+        progress += 100 / 21
+        yield progress
 
 def calculate_drop():
     drop = choice(main_droptable)

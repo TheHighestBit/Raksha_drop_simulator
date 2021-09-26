@@ -1,12 +1,14 @@
+from math import ceil
 import sys
 from random import choice, randint
 from PyQt5 import QtWidgets
 from PyQt5.QtGui import QFont
-from PyQt5.QtWidgets import QApplication, QLabel, QPushButton, QMainWindow, QWidget
+from PyQt5.QtWidgets import QApplication, QLabel, QPushButton, QMainWindow, QWidget, QMessageBox, QProgressBar
 from PyQt5.QtCore import QEventLoop, Qt, QTimer
-from raksha import calculate_drop, prices
+from raksha import calculate_drop, prices, update_prices
 from time import sleep
 
+#Used for keeping track of what items have been received
 stats = {"spirit weed seeds": 0, 
 "Carambola seeds": 0, 
 "golden dragonfruit seeds": 0, 
@@ -62,11 +64,11 @@ class Raksha(QWidget):
         super().__init__()
 
         self.setWindowTitle('Raksha')
-        self.setGeometry(500, 200, 1000, 1000)
+        self.setGeometry(1000, 100, 1300, 1000)
         self.kills = 0
         self.total = 0
         self.speed = 200 #ms between each drop
-        self.stopped = False #Used for controlling the loop that is calculating drops
+        self.stopped = True #Used for controlling the loop that is calculating drops
 
         v_box = QtWidgets.QVBoxLayout()
 
@@ -77,7 +79,7 @@ class Raksha(QWidget):
         self.button.clicked.connect(self.on_click)
 
         self.label1 = QLabel(self)
-        self.label1.setText("YOU GOT THIS!")
+        self.label1.setText("The keepers gift")
         self.label1.setAlignment(Qt.AlignCenter)
         self.label1.setStyleSheet("background-color:cyan")
         self.label1.setFont(QFont('Arial', 15))
@@ -87,7 +89,7 @@ class Raksha(QWidget):
         self.label2.setText(format_str.format(self.kills, stats["Laceration boots"], stats["Blast diffusion boots"], stats["Fleeting boots"], stats["Shadow spike"], stats["Greater ricochet ability codex"], stats["Greater chain ability codex"], stats["Divert ability codex"], stats["onyx dust"], stats["spirit weed seeds"], stats["Carambola seeds"], stats["golden dragonfruit seeds"], stats["small blunt rune salvage"], stats["medium spiky orikalkum salvage"], stats["huge plated orikalkum salvage"], stats["black dragonhide"], stats["dinosaur bones"], stats["crystal keys"], stats["inert adrenaline crystals"], stats["sirenic scales"], stats["soul runes"], stats["dark/light animica stone spirits"]))
         self.label2.setAlignment(Qt.AlignCenter)
         self.label2.setStyleSheet("background-color:cyan")
-        self.label2.setFont(QFont('Arial', 12))
+        self.label2.setFont(QFont('Arial', 10))
         self.label2.show()
 
         self.label3 = QLabel(self)
@@ -97,10 +99,22 @@ class Raksha(QWidget):
         self.label3.setFont(QFont('Arial', 15))
         self.label3.show()
 
+        self.button2 = QPushButton('Update item prices', self)
+        self.button2.clicked.connect(self.on_click2)
+
+        self.progress = QProgressBar(self)
+        self.progress.setValue(0)
+
+        h_box = QtWidgets.QHBoxLayout()
+        h_box.addWidget(self.progress, 90)
+        h_box.addStretch(1)
+
         v_box.addWidget(self.button)
         v_box.addWidget(self.label1, 33)
         v_box.addWidget(self.label2)
         v_box.addWidget(self.label3)
+        v_box.addWidget(self.button2)
+        v_box.addLayout(h_box)
         self.setLayout(v_box)
         self.show()
 
@@ -115,15 +129,15 @@ class Raksha(QWidget):
 
         while not self.stopped:
             loop = QEventLoop()
-            QTimer.singleShot(self.speed, loop.quit)
+            QTimer.singleShot(self.speed, loop.quit) #Wait for self.speed milliseconds before calculating the next drop
             loop.exec_()
             self.label1.setStyleSheet("background-color:cyan") #If last drop was a rare, the background is purple so we need to reset the color
             self.kills += 1
             drop = calculate_drop()
-            drop2 = None
+            drop2 = None #drop2 is only calculated if we get a rare as the first drop
             if drop in rare_drops:
                 drop2 = calculate_drop()
-                while drop2 in rare_drops:
+                while drop2 in rare_drops: #There is a small chance that drop2 is also a rare, so we run the loop until it isn't
                     drop2 = calculate_drop()
 
                 self.label1.setStyleSheet("background-color:pink")
@@ -143,6 +157,16 @@ class Raksha(QWidget):
                 self.label2.setText(format_str.format(self.kills, stats["Laceration boots"], stats["Blast diffusion boots"], stats["Fleeting boots"], stats["Shadow spike"], stats["Greater ricochet ability codex"], stats["Greater chain ability codex"], stats["Divert ability codex"], stats["onyx dust"], stats["spirit weed seeds"], stats["Carambola seeds"], stats["golden dragonfruit seeds"], stats["small blunt rune salvage"], stats["medium spiky orikalkum salvage"], stats["huge plated orikalkum salvage"], stats["black dragonhide"], stats["dinosaur bones"], stats["crystal keys"], stats["inert adrenaline crystals"], stats["sirenic scales"], stats["soul runes"], stats["dark/light animica stone spirits"]))
                 self.total += prices[drop[drop.index(' ') + 1:]]
                 self.label3.setText(f"Total GP made: {self.total:,} GP")
+
+    def on_click2(self):
+        if self.stopped:
+            for value in update_prices():
+                self.progress.setValue(ceil(value))
+        else:
+            msg = QMessageBox()
+            msg.setWindowTitle("Error")
+            msg.setText("Please click stop before updating prices")
+            msg.exec()
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
