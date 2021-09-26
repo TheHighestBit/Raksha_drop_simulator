@@ -71,7 +71,6 @@ class Raksha(QWidget):
         v_box = QtWidgets.QVBoxLayout()
 
         self.button = QPushButton('Calculate drops', self)
-        self.button.setToolTip("Kill {} Rakshas".format(self.kills_per_turn))
         self.button.resize(500, 100)
         self.button.move(self.frameGeometry().width() // 2 - 200, 100)
         self.button.setFont(QFont('Arial', 10))
